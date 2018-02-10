@@ -4,7 +4,6 @@ module FSTui
     def initialize(screen, title, subtitle)
       @title = title
       @subtitle = subtitle
-      @items = Array.new
       @screen = screen
     end
     
