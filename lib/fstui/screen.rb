@@ -27,6 +27,10 @@ module FSTui
     def new_inputbox(title, subtitle = "Please enter your selection below.")
       InputBox.new(self, title, subtitle)
     end
+
+    def new_messagebox(title, subtitle = "")
+      MessageBox.new(self, title, subtitle)
+    end
   end
 
   class TitleBar
@@ -77,6 +81,11 @@ module FSTui
     def redraw
       @promptwin.clear
       @promptwin.addstr @prompt
+      @promptwin.refresh
+    end
+
+    def hide
+      @promptwin.clear
       @promptwin.refresh
     end
     
