@@ -15,10 +15,11 @@ Gem::Specification.new do |s|
   s.authors = ["sarahemm"]
   s.email = "github@sen.cx"
   
-  s.files = Dir.glob("{lib,spec}/**/*") + %w(README.md Rakefile)
+  s.files = Dir.glob("{lib,spec}/**/*") + %w(README.md)
   s.require_path = "lib"
 
   s.rubygems_version = "1.3.7"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
+  s.add_dependency("curses", ["~> 1.2", ">= 1.2.0"])
 end

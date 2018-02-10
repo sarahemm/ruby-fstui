@@ -2,3 +2,4 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  curses (>= 1.2.0)
