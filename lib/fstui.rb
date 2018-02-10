@@ -26,6 +26,10 @@ module FSTui
     def new_menu(title, subtitle = "Please select one of the options below.")
       Menu.new(self, title, subtitle)
     end
+
+    def new_inputbox(title, subtitle = "Please enter your selection below.")
+      InputBox.new(self, title, subtitle)
+    end
   end
 
   class TitleBar
@@ -51,20 +55,48 @@ module FSTui
     attr_accessor :prompt
     
     def initialize(screen, prompt = " Enter your selection(s) and press <Enter> : ")
-      @win = Window.new(1, stdscr.maxx, stdscr.maxy - 2, 0)
-      @win.attrset A_REVERSE
       @prompt = prompt
+      window_setup
+    end
+
+    def window_setup
+      @promptwin = Window.new(1, @prompt.length, stdscr.maxy - 2, 0)
+      @promptwin.attrset A_REVERSE
+      @entrywin = Window.new(1, stdscr.maxx - @prompt.length, stdscr.maxy - 2, @prompt.length + 1)
       refresh
     end
     
+    def prompt=(prompt)
+      @prompt = prompt
+      destroy
+      window_setup
+    end
+
+    def destroy
+      @promptwin.close_screen
+      @entrywin.close_screen
+    end
+    
     def redraw
-      @win.clear
-      @win.addstr @prompt
-      @win.refresh
+      @promptwin.clear
+      @promptwin.addstr @prompt
+      @promptwin.refresh
     end
     
     def get_selection
-      @win.getch
+      @entrywin.setpos 0, 0
+      entry = @entrywin.getch
+      @entrywin.clear
+      @entrywin.refresh
+      entry
+    end
+    
+    def get_string
+      @entrywin.setpos 0, 0
+      entry = @entrywin.getstr
+      @entrywin.clear
+      @entrywin.refresh
+      entry
     end
   end
   
@@ -83,7 +115,7 @@ module FSTui
     
     def get_response
       loop do
-        @win = Window.new(@items.length + 4, stdscr.maxx, 5, 0)  # TODO: don't hardcode
+        @win = Window.new(@items.length + 4, stdscr.maxx, 5, 0)
         @win.addstr @title.center(@win.maxx)
         @win.addstr @subtitle.center(@win.maxx) + "\n"
       
@@ -103,6 +135,8 @@ module FSTui
         @win.refresh
         @screen.redraw
         selection = @screen.inputbar.get_selection
+        @win.clear
+        @win.refresh
         @win.close
         return @items[selection.to_i - 1].key if(("0".."9").include?(selection) and selection.to_i <= @items.length)
       end
@@ -115,6 +149,28 @@ module FSTui
         @key = key
         @desc = desc
       end
+    end
+  end
+  
+  class InputBox
+    attr_accessor :title
+    def initialize(screen, title, subtitle)
+      @title = title
+      @subtitle = subtitle
+      @items = Array.new
+      @screen = screen
+    end
+    
+    def get_entry
+      @win = Window.new(5, stdscr.maxx, stdscr.maxy / 2 - 3, 0)
+      @win.addstr @title.center(@win.maxx)
+      @win.addstr @subtitle.center(@win.maxx) + "\n"
+      
+      @win.refresh
+      @screen.redraw
+      selection = @screen.inputbar.get_string
+      @win.close
+      selection
     end
   end
 end
