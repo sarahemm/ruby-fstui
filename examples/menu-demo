@@ -1,0 +1,38 @@
+#!/usr/bin/ruby
+
+require "../lib/fstui.rb"
+
+screen = FSTui::Screen.new
+
+begin
+  date_string = Time.now.strftime("%d %^b %Y")
+  time_string = Time.now.strftime("%H:%M")
+  screen.titlebar.left = date_string
+  screen.titlebar.right = time_string
+  screen.titlebar.center = "FSTUI DEMO"
+  screen.redraw
+  
+  loop do
+    demo_menu = screen.new_menu("Welcome to the Ruby FSTui Demo!")
+    demo_menu.add_item :one,   "Item One"
+    demo_menu.add_item :two,   "Item Two"
+    demo_menu.add_item :three, "Item Three"
+    demo_menu.add_item :four,  "Item Four"
+    demo_menu.add_item :exit,  "Exit"
+  
+    response = demo_menu.get_response
+    case response
+      when :exit
+        screen.destroy
+        Kernel.exit
+      else
+        demobox = screen.new_messagebox "User selected item with key :#{response}"
+        demobox.show
+        sleep 1
+        demobox.hide
+    end
+  end
+ensure
+  screen.destroy
+end
+
