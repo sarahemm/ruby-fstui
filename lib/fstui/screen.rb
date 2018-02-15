@@ -74,8 +74,8 @@ module FSTui
     end
 
     def destroy
-      @promptwin.close_screen
-      @entrywin.close_screen
+      @promptwin.close
+      @entrywin.close
     end
     
     def redraw
