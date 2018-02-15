@@ -31,6 +31,10 @@ module FSTui
     def new_messagebox(title, subtitle = "")
       MessageBox.new(self, title, subtitle)
     end
+
+    def new_infolist(infoline, lines_per_item)
+      InfoList.new(self, infoline, lines_per_item)
+    end
   end
 
   class TitleBar

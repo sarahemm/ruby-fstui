@@ -10,6 +10,7 @@ begin
   screen.titlebar.left = date_string
   screen.titlebar.right = time_string
   screen.titlebar.center = "FSTUI DEMO"
+  screen.inputbar.instructions = "[K]ey instructions can go here"
   screen.redraw
   
   loop do
