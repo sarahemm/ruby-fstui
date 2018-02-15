@@ -53,17 +53,20 @@ module FSTui
   end
   
   class InputBar
-    attr_accessor :prompt
+    attr_accessor :prompt, :instructions
     
-    def initialize(screen, prompt = " Enter your selection(s) and press <Enter> : ")
+    def initialize(screen, prompt = " Enter your selection(s) and press <Enter> : ", instructions = "")
       @prompt = prompt
+      @instructions = instructions
       window_setup
     end
 
     def window_setup
+      # TODO: this could use a lot of simplification
       @promptwin = Window.new(1, @prompt.length, stdscr.maxy - 2, 0)
       @promptwin.attrset A_REVERSE
       @entrywin = Window.new(1, stdscr.maxx - @prompt.length, stdscr.maxy - 2, @prompt.length + 1)
+      @instructionwin = Window.new(1, stdscr.maxx, stdscr.maxy-1, 0)
       refresh
     end
     
@@ -82,6 +85,9 @@ module FSTui
       @promptwin.clear
       @promptwin.addstr @prompt
       @promptwin.refresh
+      @instructionwin.clear
+      @instructionwin.addstr @instructions
+      @instructionwin.refresh
     end
 
     def hide
