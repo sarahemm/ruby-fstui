@@ -3,6 +3,7 @@
 require "../lib/fstui.rb"
 
 screen = FSTui::Screen.new
+include FSTui
 
 begin
   date_string = Time.now.strftime("%d %^b %Y")
@@ -18,10 +19,10 @@ begin
     demo_infolist.left_heading = "LEFT HEADING"
     demo_infolist.right_heading = "RIGHT HEADING"
     (1..25).each do |idx|
-      demo_infolist.add_item [["Item #{idx}, Line 1, Left", "Item #{idx}, Line 1, Right"],["Item #{idx}, Line 2, Left", "Item #{idx}, Line 2, Right"]]
+      demo_infolist.add_item InfoItem.new(key: "item_#{idx}".to_sym, rows: [InfoRow.new(lhs: "Item #{idx}, Line 1, Left", rhs: "Item #{idx}, Line 1, Right"), InfoRow.new(lhs: "Item #{idx}, Line 2, Left", rhs: "Item #{idx}, Line 2, Right")])
     end
     response = demo_infolist.get_response
-    demobox = screen.new_messagebox "User selected item #{response} (which is shown to user as item #{response+1})"
+    demobox = screen.new_messagebox "User selected item #{response}"
     demobox.show
     sleep 2
     demobox.hide

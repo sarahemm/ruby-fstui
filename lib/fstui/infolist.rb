@@ -13,6 +13,10 @@ module FSTui
       @items.push item
     end
 
+    def <<(item)
+      @items.push item
+    end
+
     def clear_items
       @items = []
     end
@@ -35,15 +39,15 @@ module FSTui
 	@items[start_item..start_item + items_per_page].each do |item|
           # figure out which line has the longest right-hand side so we know how much to trim the left so it doesn't interfere
           longest_rhs = 0
-          item.each do |line|
-            longest_rhs = line[1].length if line[1].length > longest_rhs
+          item.rows.each do |row|
+            longest_rhs = row.rhs.length if row.rhs.length > longest_rhs
           end
-          lhs = truncate(item[0][0], stdscr.maxx - 6 - longest_rhs - 3)
-          @win.addstr "  #{idx}. #{lhs}" + " "*(stdscr.maxx - 5 - 1 - idx.to_s.length - lhs.length - item[0][1].length) + "#{item[0][1]}\n"
-          if(item.length > 1)
-            item[1..-1].each do |line|
-              lhs = truncate(line[0], stdscr.maxx - 9 - longest_rhs - 3)
-              @win.addstr "       #{lhs}" + " "*(stdscr.maxx - 7 - 2 - lhs.length - line[1].length) + "#{line[1]}\n"
+          lhs = truncate(item.rows[0].lhs, stdscr.maxx - 6 - longest_rhs - 3)
+          @win.addstr "  #{idx}. #{lhs}" + " "*(stdscr.maxx - 5 - 1 - idx.to_s.length - lhs.length - item.rows[0].rhs.length) + "#{item.rows[0].rhs}\n"
+          if(item.rows.length > 1)
+            item.rows[1..-1].each do |row|
+              lhs = truncate(row.lhs, stdscr.maxx - 9 - longest_rhs - 3)
+              @win.addstr "       #{lhs}" + " "*(stdscr.maxx - 7 - 2 - lhs.length - row.rhs.length) + "#{row.rhs}\n"
             end
           end
           @win.addstr "\n"
@@ -70,7 +74,7 @@ module FSTui
         elsif(selection == "b" or selection == "B" and page > 1)
           page -= 1
         else
-	  return selection.to_i - 1 if selection.to_i > 0 and selection.to_i < @items.length + 1
+	  return @items[selection.to_i - 1].key if selection.to_i > 0 and selection.to_i < @items.length + 1
         end
       end
     end
@@ -80,6 +84,31 @@ module FSTui
     def truncate(str, len)
       return str if str.length <= len
       "#{str[0..len-3]}..."
+    end
+
+  end
+  class InfoItem
+    attr_accessor :key, :rows
+
+    def initialize(key:, rows:)
+      @key = key
+      @rows = rows
+    end
+  end
+
+  class InfoRow
+    attr_accessor :lhs, :rhs
+
+    def initialize(lhs:, rhs:)
+      @lhs = lhs
+      @rhs = rhs
+    end
+
+    def [](idx)
+      return @lhs if idx == 0
+      return @rhs if idx == 1
+
+      nil
     end
   end
 end
