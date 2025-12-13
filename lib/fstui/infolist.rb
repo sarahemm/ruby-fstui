@@ -12,7 +12,11 @@ module FSTui
     def add_item(item)
       @items.push item
     end
-    
+
+    def clear_items
+      @items = []
+    end
+
     def get_response
       page = 1
       loop do
@@ -29,10 +33,17 @@ module FSTui
 
         idx = start_item + 1
 	@items[start_item..start_item + items_per_page].each do |item|
-          @win.addstr "  #{idx}. #{item[0][0]}" + " "*(stdscr.maxx - 5 - 1 - idx.to_s.length - item[0][0].length - item[0][1].length) + "#{item[0][1]}\n"
+          # figure out which line has the longest right-hand side so we know how much to trim the left so it doesn't interfere
+          longest_rhs = 0
+          item.each do |line|
+            longest_rhs = line[1].length if line[1].length > longest_rhs
+          end
+          lhs = truncate(item[0][0], stdscr.maxx - 6 - longest_rhs - 3)
+          @win.addstr "  #{idx}. #{lhs}" + " "*(stdscr.maxx - 5 - 1 - idx.to_s.length - lhs.length - item[0][1].length) + "#{item[0][1]}\n"
           if(item.length > 1)
             item[1..-1].each do |line|
-              @win.addstr "       #{line[0]}" + " "*(stdscr.maxx - 7 - 2 - line[0].length - line[1].length) + "#{line[1]}\n"
+              lhs = truncate(line[0], stdscr.maxx - 9 - longest_rhs - 3)
+              @win.addstr "       #{lhs}" + " "*(stdscr.maxx - 7 - 2 - lhs.length - line[1].length) + "#{line[1]}\n"
             end
           end
           @win.addstr "\n"
@@ -62,6 +73,13 @@ module FSTui
 	  return selection.to_i - 1 if selection.to_i > 0 and selection.to_i < @items.length + 1
         end
       end
+    end
+
+    private
+
+    def truncate(str, len)
+      return str if str.length <= len
+      "#{str[0..len-3]}..."
     end
   end
 end
