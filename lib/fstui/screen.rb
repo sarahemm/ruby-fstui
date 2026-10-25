@@ -35,6 +35,14 @@ module FSTui
     def new_infolist(infoline, lines_per_item)
       InfoList.new(self, infoline, lines_per_item)
     end
+
+    def new_datascreen(title, subtitle = "", data)
+      DataScreen.new(self, title, subtitle, data)
+    end
+
+    def new_fieldscreen(title, subtitle = "", fields)
+      FieldScreen.new(self, title, subtitle, fields)
+    end
   end
 
   class TitleBar
@@ -99,11 +107,15 @@ module FSTui
       @promptwin.refresh
     end
     
-    def get_selection
-      @entrywin.setpos 0, 0
-      entry = @entrywin.getch
-      @entrywin.clear
-      @entrywin.refresh
+    def get_selection(options: nil)
+      while(true) do
+        @entrywin.setpos 0, 0
+        entry = @entrywin.getch
+        @entrywin.clear
+        @entrywin.refresh
+        entry = :enter if entry == 10 or entry == 13
+        break if options == nil or options.include? entry
+      end
       entry
     end
     
