@@ -9,6 +9,12 @@ module FSTui
       @fields = fields
     end
     
+    def clear_fields
+      @fields.each do |field|
+        field.value = nil
+      end
+    end
+
     def get_response(options: nil)
       loop do
         # TODO: window length needs to be done better
