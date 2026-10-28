@@ -31,11 +31,9 @@ module FSTui
           @win.addstr menu_text
         end
 
-        @win.refresh
-        @screen.redraw
+        @win.noutrefresh
         selection = @screen.inputbar.get_selection
         @win.clear
-        @win.refresh
         @win.close
         return @items[selection.to_i - 1].key if(("0".."9").include?(selection) and selection.to_i <= @items.length)
       end

@@ -27,11 +27,10 @@ module FSTui
           @win.addstr "#{padding}#{line.strip}\n"
         end
 
-        @win.refresh
-        @screen.redraw
+        @win.noutrefresh
         selection = @screen.inputbar.get_selection(options: options)
         @win.clear
-        @win.refresh
+        @win.noutrefresh
         @win.close
         return selection
       end

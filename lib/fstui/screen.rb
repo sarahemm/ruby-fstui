@@ -46,21 +46,34 @@ module FSTui
   end
 
   class TitleBar
-    attr_accessor :left, :center, :right
-    
     def initialize(screen, pad_chars = 2)
       @win = Window.new(1, stdscr.maxx, 0, 0)
       @win.attrset A_REVERSE
-      @win.refresh
+      @win.noutrefresh
       @left = @center = @right = ""
       @pad_chars = pad_chars
       redraw
     end
-    
+
+    def center=(center)
+      @center = center
+      redraw
+    end
+
+    def left=(left)
+      @left = left
+      redraw
+    end
+
+    def right=(right)
+      @right = right
+      redraw
+    end
+
     def redraw
       @win.clear
       @win.addstr (" " * @pad_chars) + @left + @center.center(@win.maxx - (@left.length + @pad_chars) - (@right.length + @pad_chars)) + @right + (" " * @pad_chars)
-      @win.refresh
+      @win.noutrefresh
     end
   end
   
@@ -79,7 +92,6 @@ module FSTui
       @promptwin.attrset A_REVERSE
       @entrywin = Window.new(1, stdscr.maxx - @prompt.length, stdscr.maxy - 2, @prompt.length + 1)
       @instructionwin = Window.new(1, stdscr.maxx, stdscr.maxy-1, 0)
-      refresh
     end
     
     def prompt=(prompt)
@@ -96,23 +108,25 @@ module FSTui
     def redraw
       @promptwin.clear
       @promptwin.addstr @prompt
-      @promptwin.refresh
+      @promptwin.noutrefresh
       @instructionwin.clear
       @instructionwin.addstr @instructions
-      @instructionwin.refresh
+      @instructionwin.noutrefresh
     end
 
     def hide
       @promptwin.clear
-      @promptwin.refresh
+      @promptwin.noutrefresh
     end
     
     def get_selection(options: nil)
       while(true) do
         @entrywin.setpos 0, 0
+        redraw
+        # getch will doupdate() for us as well
         entry = @entrywin.getch
         @entrywin.clear
-        @entrywin.refresh
+        @entrywin.noutrefresh
         entry = :enter if entry == 10 or entry == 13
         break if options == nil or options.include? entry
       end
@@ -121,9 +135,11 @@ module FSTui
     
     def get_string
       @entrywin.setpos 0, 0
+      redraw
+      # getstr will doupdate() for us as well
       entry = @entrywin.getstr
       @entrywin.clear
-      @entrywin.refresh
+      @entrywin.noutrefresh
       entry
     end
   end

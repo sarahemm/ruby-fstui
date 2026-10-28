@@ -33,8 +33,7 @@ module FSTui
         end
         
         @screen.inputbar.instructions = "#=Enter Data  ENTER=Submit Form"
-        @win.refresh
-        @screen.redraw
+        @win.noutrefresh
         selection = @screen.inputbar.get_selection(options: options)
         case selection
           when "1", "2", "3", "4", "5", "6", "7", "8", "9"
@@ -60,14 +59,16 @@ module FSTui
             if(field_errors == 0) then
               # everything looks good, end here and return the collected data
               @win.clear
-              @win.refresh
+              @win.noutrefresh
               @win.close
               return @fields
             else
+              # TODO: consider blink or something, this isn't very obvious
               @screen.inputbar.instructions = "Missing data in required field!"
-              @win.refresh
+              @win.noutrefresh
               @screen.redraw
-              sleep 1
+              doupdate
+              sleep 3
             end
         end
       end

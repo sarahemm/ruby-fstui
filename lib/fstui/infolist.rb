@@ -56,17 +56,16 @@ module FSTui
         morepages = page < total_pages ? "More on Next Screen" : "End of List"
         @win.addstr "\n** #{@items.length} Items UNSORTED - Page #{page} of #{total_pages} - #{morepages} **"
 
-        @win.refresh
+        @win.noutrefresh
         old_instructions = @screen.inputbar.instructions
         instructions = []
         instructions.push "B=Back" if page > 1
         instructions.push "<Enter>=Next Screen" if page < total_pages
         @screen.inputbar.instructions = instructions.join(", ")
-        @screen.redraw
         selection = @screen.inputbar.get_string
         @screen.inputbar.instructions = old_instructions
         @win.clear
-        @win.refresh
+        @win.noutrefresh
         @win.close
         
         if(selection == "" and page < total_pages)
