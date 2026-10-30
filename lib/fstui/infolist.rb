@@ -21,7 +21,7 @@ module FSTui
       @items = []
     end
 
-    def get_response
+    def get_response(extra_options: [])
       page = 1
       loop do
         @win = Window.new(stdscr.maxy - 5, stdscr.maxx, 2, 0)
@@ -59,6 +59,9 @@ module FSTui
         @win.noutrefresh
         old_instructions = @screen.inputbar.instructions
         instructions = []
+        extra_options.each do |key, desc|
+          instructions << "#{key}=#{desc}"
+        end
         instructions.push "B=Back" if page > 1
         instructions.push "<Enter>=Next Screen" if page < total_pages
         @screen.inputbar.instructions = instructions.join(", ")
@@ -72,6 +75,8 @@ module FSTui
           page += 1
         elsif(selection == "b" or selection == "B" and page > 1)
           page -= 1
+        elsif(extra_options.keys.include?(selection.upcase) or extra_options.keys.include?(selection.downcase))
+          return selection
         else
 	  return @items[selection.to_i - 1].key if selection.to_i > 0 and selection.to_i < @items.length + 1
         end
