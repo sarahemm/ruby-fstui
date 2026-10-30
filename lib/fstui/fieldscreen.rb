@@ -79,17 +79,19 @@ module FSTui
     def edit_field(field_nbr)
       field = @fields[field_nbr]
       field_row = 3+field_nbr*2
+      value = ""
+      value = field.value if field.value
+      insert_pos = value.length
       @win.setpos field_row, 0
       @win.addstr "  #{field_nbr+1} - #{field.display_name}: "
       @win.standout
-      @win.addstr "                                 "
+      # TODO: fix the hardcoded 33-long fields :)
+      @win.addstr value.ljust(33)
       @win.clrtoeol
-      @win.setpos field_row, 8+field.display_name.length
+      @win.setpos field_row, 8+field.display_name.length + value.length
       noecho
       @win.refresh
       @win.keypad(true)
-      value = ""
-      insert_pos = 0
       loop do
         char = @win.getch
         case char
