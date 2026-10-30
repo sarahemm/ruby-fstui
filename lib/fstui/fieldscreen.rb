@@ -32,7 +32,7 @@ module FSTui
           @win.addstr "\n\n"
         end
         
-        @screen.inputbar.instructions = "#=Enter Data  ENTER=Submit Form"
+        @screen.inputbar.instructions = "#=Enter Data  ENTER=Submit Form  A=Abort"
         @win.noutrefresh
         selection = @screen.inputbar.get_selection(options: options)
         case selection
@@ -70,6 +70,8 @@ module FSTui
               doupdate
               sleep 3
             end
+          when 'A', 'a'
+            return nil
         end
       end
     end
@@ -94,10 +96,16 @@ module FSTui
           when 10, 13, "\n", "\r"
             break
           when 8, KEY_BACKSPACE, "\b"
+            next unless insert_pos > 0
             row = @win.cury
             col = @win.curx
-            value = value[0..insert_pos-2] + value[insert_pos..-1]
-            insert_pos -= 1
+            if(insert_pos == 1) then
+              value = ""
+              insert_pos = 0
+            else
+              value = value[0..insert_pos-2] + value[insert_pos..-1]
+              insert_pos -= 1
+            end
             @win.setpos(row, col-1)
             @win.addstr value[insert_pos..-1] + ' '
             @win.setpos(row, col-1)
@@ -115,9 +123,6 @@ module FSTui
             insert_pos += 1
           when KEY_DOWN, KEY_UP
           else
-            #@screen.destroy
-            #pp char
-            #Kernel.exit
             value.insert(insert_pos, char)
             insert_pos += 1
             if(insert_pos == value.length) then
