@@ -51,6 +51,7 @@ module FSTui
               @win.addstr "  #{idx+1} X #{field.display_name}: "
               @win.standout
               @win.addstr "                                 "
+              @win.standend
               @win.clrtoeol
               @win.setpos field_row, 8+field.display_name.length
               field_errors += 1
