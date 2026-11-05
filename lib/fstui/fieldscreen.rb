@@ -7,6 +7,7 @@ module FSTui
       @title = title
       @subtitle = subtitle
       @fields = fields
+      @field_rows = []
     end
     
     def clear_fields
@@ -17,14 +18,15 @@ module FSTui
 
     def get_response(options: nil)
       loop do
-        # TODO: window length needs to be done better
-        @win = Window.new(@fields.length*2+3, stdscr.maxx, 5, 0)
+        @win = Window.new(stdscr.maxy-4, stdscr.maxx, 2, 0)
         @win.addstr @title.center(@win.maxx)
         @win.addstr @subtitle.center(@win.maxx) + "\n"
       
         # draw the fields on the form
         @fields.each_index do |idx|
           field = @fields[idx]
+          # keep track of which row each field starts on, for later edits
+          @field_rows[idx] = @win.cury
           @win.addstr "  #{idx+1} - #{field.display_name}: "
           @win.attron Curses::A_UNDERLINE
           @win.addstr "#{field.value}"
@@ -84,17 +86,16 @@ module FSTui
 
     def edit_field(field_nbr)
       field = @fields[field_nbr]
-      field_row = 3+field_nbr*2
       value = ""
       value = field.value if field.value
       insert_pos = value.length
-      @win.setpos field_row, 0
+      @win.setpos @field_rows[field_nbr], 0
       @win.addstr "  #{field_nbr+1} - #{field.display_name}: "
       @win.standout
       # TODO: fix the hardcoded 33-long fields :)
       @win.addstr value.ljust(33)
       @win.clrtoeol
-      @win.setpos field_row, 8+field.display_name.length + value.length
+      @win.setpos @field_rows[field_nbr], 8+field.display_name.length + value.length
       noecho
       @win.refresh
       @win.keypad(true)
