@@ -115,9 +115,15 @@ module FSTui
               value = value[0..insert_pos-2] + value[insert_pos..-1]
               insert_pos -= 1
             end
-            @win.setpos(row, col-1)
-            @win.addstr value[insert_pos..-1] + ' '
-            @win.setpos(row, col-1)
+            if(col==0) then
+              @win.setpos(row-1, @win.maxx-1)
+              @win.addstr value[insert_pos..-1] + ' '
+              @win.setpos(row-1, @win.maxx-1)
+            else
+              @win.setpos(row, col-1)
+              @win.addstr value[insert_pos..-1] + ' '
+              @win.setpos(row, col-1)
+            end
           when KEY_DC # delete
             next unless insert_pos < value.length
             value = value[0..insert_pos-1] + value[insert_pos+1..-1]
@@ -129,13 +135,21 @@ module FSTui
             next unless insert_pos > 0
             row = @win.cury
             col = @win.curx
-            @win.setpos(row, col-1)
+            if(col == 0) then
+              @win.setpos(row-1, @win.maxx-1)
+            else
+              @win.setpos(row, col-1)
+            end
             insert_pos -= 1
           when KEY_RIGHT
             next unless insert_pos < value.length
             row = @win.cury
             col = @win.curx
-            @win.setpos(row, col+1)
+            if(col == @win.maxx-1) then
+              @win.setpos(row+1, 0)
+            else
+              @win.setpos(row, col+1)
+            end
             insert_pos += 1
           when KEY_DOWN, KEY_UP
           else
