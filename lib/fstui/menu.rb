@@ -15,6 +15,7 @@ module FSTui
     def get_response
       loop do
         @win = Window.new(@items.length + 4, stdscr.maxx, 5, 0)
+        @win.clear
         @win.addstr @title.center(@win.maxx)
         @win.addstr @subtitle.center(@win.maxx) + "\n"
       
@@ -34,6 +35,7 @@ module FSTui
         @win.noutrefresh
         selection = @screen.inputbar.get_selection
         @win.clear
+        @win.noutrefresh
         @win.close
         return @items[selection.to_i - 1].key if(("0".."9").include?(selection) and selection.to_i <= @items.length)
       end

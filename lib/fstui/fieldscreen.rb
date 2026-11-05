@@ -72,6 +72,9 @@ module FSTui
               sleep 3
             end
           when 'A', 'a'
+            @win.clear
+            @win.noutrefresh
+            @win.close
             return nil
         end
       end
