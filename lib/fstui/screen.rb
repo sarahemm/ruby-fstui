@@ -19,7 +19,7 @@ module FSTui
       @titlebar.redraw
       @inputbar.redraw
     end
-    
+
     def new_menu(title, subtitle = "Please select one of the options below.")
       Menu.new(self, title, subtitle)
     end
@@ -30,6 +30,13 @@ module FSTui
 
     def new_messagebox(title, subtitle = "")
       MessageBox.new(self, title, subtitle)
+    end
+
+    def pop_messagebox(title, subtitle = "", timeout = 3)
+      msg = MessageBox.new(self, title, subtitle)
+      msg.show
+      sleep timeout
+      msg.hide
     end
 
     def new_infolist(infoline, lines_per_item)

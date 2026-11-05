@@ -12,7 +12,6 @@ module FSTui
       @win.addstr @title.center(@win.maxx)
       @win.addstr @subtitle.center(@win.maxx) + "\n"
       @win.refresh
-      @screen.redraw
       @screen.inputbar.hide
     end
     
