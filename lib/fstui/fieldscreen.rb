@@ -62,6 +62,7 @@ module FSTui
               @win.clear
               @win.noutrefresh
               @win.close
+              @screen.inputbar.instructions = ""
               return @fields
             else
               # TODO: consider blink or something, this isn't very obvious
@@ -75,6 +76,7 @@ module FSTui
             @win.clear
             @win.noutrefresh
             @win.close
+            @screen.inputbar.instructions = ""
             return nil
         end
       end
@@ -101,7 +103,7 @@ module FSTui
         case char
           when 10, 13, "\n", "\r"
             break
-          when 8, KEY_BACKSPACE, "\b"
+          when 8, KEY_BACKSPACE, "\b", 127
             next unless insert_pos > 0
             row = @win.cury
             col = @win.curx
@@ -115,6 +117,13 @@ module FSTui
             @win.setpos(row, col-1)
             @win.addstr value[insert_pos..-1] + ' '
             @win.setpos(row, col-1)
+          when KEY_DC # delete
+            next unless insert_pos < value.length
+            value = value[0..insert_pos-1] + value[insert_pos+1..-1]
+            row = @win.cury
+            col = @win.curx
+            @win.addstr value[insert_pos..-1] + ' '
+            @win.setpos(row, col)
           when KEY_LEFT
             next unless insert_pos > 0
             row = @win.cury
