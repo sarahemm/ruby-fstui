@@ -11,7 +11,7 @@ module FSTui
     
     def get_response(options: nil)
       loop do
-        @win = Window.new(@data.lines.length+3, stdscr.maxx, 5, 0)
+        @win = Window.new(stdscr.maxy-4, stdscr.maxx, 5, 0)
         @win.addstr @title.center(@win.maxx)
         @win.addstr @subtitle.center(@win.maxx) + "\n"
       
