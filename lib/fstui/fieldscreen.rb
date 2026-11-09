@@ -18,28 +18,24 @@ module FSTui
 
     def get_response(options: nil)
       loop do
-        @win = Window.new(stdscr.maxy-4, stdscr.maxx, 2, 0)
-        @win.addstr @title.center(@win.maxx)
-        @win.addstr @subtitle.center(@win.maxx) + "\n"
-      
-        # draw the fields on the form
-        @fields.each_index do |idx|
-          field = @fields[idx]
-          # keep track of which row each field starts on, for later edits
-          @field_rows[idx] = @win.cury
-          @win.addstr "  #{idx+1} - #{field.display_name}: "
-          @win.attron Curses::A_UNDERLINE
-          @win.addstr "#{field.value}"
-          @win.attroff Curses::A_UNDERLINE
-          @win.addstr "\n\n"
-        end
-        
-        @screen.inputbar.instructions = "#=Enter Data  ENTER=Submit Form  A=Abort"
-        @win.noutrefresh
+        draw_screen
         selection = @screen.inputbar.get_selection(options: options)
         case selection
           when "1", "2", "3", "4", "5", "6", "7", "8", "9"
-            edit_field selection.to_i-1
+            field_nbr = selection.to_i-1
+            next if field_nbr > fields.length-1
+            loop do
+              action = edit_field field_nbr
+              case action
+                when :next_field
+                  field_nbr += 1 unless field_nbr == fields.length-1
+                when :prev_field
+                  field_nbr -= 1 unless field_nbr == 0
+                when :done
+                  break
+              end
+              draw_screen
+            end
           when :enter
             # check that all required fields have data
             field_errors = 0
@@ -99,10 +95,12 @@ module FSTui
       noecho
       @win.refresh
       @win.keypad(true)
+      action = :unknown
       loop do
         char = @win.getch
         case char
           when 10, 13, "\n", "\r"
+            action = :done
             break
           when 8, KEY_BACKSPACE, "\b", 127
             next unless insert_pos > 0
@@ -151,8 +149,16 @@ module FSTui
               @win.setpos(row, col+1)
             end
             insert_pos += 1
-          when KEY_DOWN, KEY_UP
+          when KEY_DOWN, 9
+            action = :next_field
+            break
+          when KEY_UP, 353
+            action = :prev_field
+            break
           else
+            pp char
+            @screen.destroy
+            Kernel.exit
             value.insert(insert_pos, char)
             insert_pos += 1
             if(insert_pos == value.length) then
@@ -172,6 +178,31 @@ module FSTui
       @win.standend
 
       @fields[field_nbr].value = value
+
+      action
+    end
+
+    private
+
+    def draw_screen
+      @win = Window.new(stdscr.maxy-4, stdscr.maxx, 2, 0)
+      @win.addstr @title.center(@win.maxx)
+      @win.addstr @subtitle.center(@win.maxx) + "\n"
+
+      # draw the fields on the form
+      @fields.each_index do |idx|
+        field = @fields[idx]
+        # keep track of which row each field starts on, for later edits
+        @field_rows[idx] = @win.cury
+        @win.addstr "  #{idx+1} - #{field.display_name}: "
+        @win.attron Curses::A_UNDERLINE
+        @win.addstr "#{field.value}"
+        @win.attroff Curses::A_UNDERLINE
+        @win.addstr "\n\n"
+      end
+
+      @screen.inputbar.instructions = "#=Enter Data  ENTER=Submit Form  A=Abort"
+      @win.noutrefresh
     end
   end
 
