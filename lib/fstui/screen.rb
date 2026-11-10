@@ -126,27 +126,42 @@ module FSTui
       @promptwin.noutrefresh
     end
     
-    def get_selection(options: nil)
+    def get_selection(options: nil, timeout: nil)
       while(true) do
         @entrywin.setpos 0, 0
         redraw
+        @entrywin.timeout = timeout*1000 if timeout
         # getch will doupdate() for us as well
         entry = @entrywin.getch
+        @entrywin.timeout = -1
         @entrywin.clear
         @entrywin.noutrefresh
         entry = :enter if entry == 10 or entry == 13
+        return :timeout if entry == nil
         break if options == nil or options.include? entry
       end
       entry
     end
     
-    def get_string
+    def get_string(timeout: nil)
       @entrywin.setpos 0, 0
       redraw
-      # getstr will doupdate() for us as well
-      entry = @entrywin.getstr
+      @entrywin.timeout = timeout*1000 if timeout
+      # we can't use getstr since that returns "" if it times out, which we
+      # can't distinguish from just pressing enter
+      # getch will doupdate() for us as well
+      entry = ""
+      loop do
+        char = @entrywin.getch
+        break if char == 10 or char == 13 or char == KEY_ENTER
+        next if char.is_a? Integer
+        return :timeout if char == nil
+        entry += char
+      end
+      @entrywin.timeout = -1
       @entrywin.clear
       @entrywin.noutrefresh
+
       entry
     end
   end

@@ -16,10 +16,10 @@ module FSTui
       end
     end
 
-    def get_response(options: nil)
+    def get_response(options: nil, timeout: nil)
       loop do
         draw_screen
-        selection = @screen.inputbar.get_selection(options: options)
+        selection = @screen.inputbar.get_selection(options: options, timeout: timeout)
         case selection
           when "1", "2", "3", "4", "5", "6", "7", "8", "9"
             field_nbr = selection.to_i-1
@@ -76,6 +76,12 @@ module FSTui
             @win.close
             @screen.inputbar.instructions = ""
             return nil
+          when :timeout
+            @win.clear
+            @win.noutrefresh
+            @win.close
+            @screen.inputbar.instructions = ""
+            return :timeout
         end
       end
     end

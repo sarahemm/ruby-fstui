@@ -21,7 +21,7 @@ module FSTui
       @items = []
     end
 
-    def get_response(extra_options: [])
+    def get_response(extra_options: [], timeout: nil)
       page = 1
       loop do
         @win = Window.new(stdscr.maxy - 5, stdscr.maxx, 2, 0)
@@ -65,13 +65,15 @@ module FSTui
         instructions.push "B=Back" if page > 1
         instructions.push "<Enter>=Next Screen" if page < total_pages
         @screen.inputbar.instructions = instructions.join(", ")
-        selection = @screen.inputbar.get_string
+        selection = @screen.inputbar.get_string(timeout: timeout)
         @screen.inputbar.instructions = old_instructions
         @win.clear
         @win.noutrefresh
         @win.close
         
-        if(selection == "" and page < total_pages)
+        if(selection == :timeout)
+          return :timeout
+        elsif(selection == "" and page < total_pages)
           page += 1
         elsif(selection == "b" or selection == "B" and page > 1)
           page -= 1

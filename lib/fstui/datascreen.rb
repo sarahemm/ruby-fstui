@@ -9,7 +9,7 @@ module FSTui
       @data = data
     end
     
-    def get_response(options: nil)
+    def get_response(options: nil, timeout: nil)
       loop do
         @win = Window.new(stdscr.maxy-4, stdscr.maxx, 5, 0)
         @win.addstr @title.center(@win.maxx)
@@ -28,7 +28,7 @@ module FSTui
         end
 
         @win.noutrefresh
-        selection = @screen.inputbar.get_selection(options: options)
+        selection = @screen.inputbar.get_selection(options: options, timeout: timeout)
         @win.clear
         @win.noutrefresh
         @win.close
