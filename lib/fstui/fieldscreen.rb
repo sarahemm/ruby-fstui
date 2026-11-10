@@ -156,9 +156,6 @@ module FSTui
             action = :prev_field
             break
           else
-            pp char
-            @screen.destroy
-            Kernel.exit
             value.insert(insert_pos, char)
             insert_pos += 1
             if(insert_pos == value.length) then
