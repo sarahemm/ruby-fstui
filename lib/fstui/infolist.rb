@@ -21,7 +21,7 @@ module FSTui
       @items = []
     end
 
-    def get_response(extra_options: [], timeout: nil)
+    def get_response(extra_options: [], timeout: nil, sorted: false)
       page = 1
       loop do
         @win = Window.new(stdscr.maxy - 5, stdscr.maxx, 2, 0)
@@ -54,7 +54,8 @@ module FSTui
           idx += 1
         end
         morepages = page < total_pages ? "More on Next Screen" : "End of List"
-        @win.addstr "\n** #{@items.length} Items UNSORTED - Page #{page} of #{total_pages} - #{morepages} **"
+        sorted_text = sorted ? 'SORTED' : 'UNSORTED'
+        @win.addstr "\n** #{@items.length} Items #{sorted_text} - Page #{page} of #{total_pages} - #{morepages} **"
 
         @win.noutrefresh
         old_instructions = @screen.inputbar.instructions
